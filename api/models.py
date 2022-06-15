@@ -3,6 +3,10 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 # Create your models here.
 
+
+# URL CAN NEVER BE UPPER CASE, AS WE ARE PASSING CATEGORY IN THE URL AND EXTRACTING IT FROM URL
+# CATEGORIES SHOULD ALWAYS BE LOWERCASE 
+
 class Category(models.Model):
     name=models.CharField(max_length=100)
 
@@ -48,9 +52,10 @@ class Question(Updated):
     )
 
     difficulty = models.IntegerField(choices=SCALE, verbose_name=_("Difficulty"))
-    quiz = models.ForeignKey(Quiz,on_delete=models.DO_NOTHING)
+    quiz = models.ForeignKey(Quiz,on_delete=models.DO_NOTHING, related_name='question')
     technique = models.CharField(max_length=100,choices=TYPE, verbose_name=_("Technique"))
     date_created = models.DateTimeField(auto_now_add=True, verbose_name=_("Date Created"))
+    title= models.CharField(max_length=100, default=_("New Question"),verbose_name=_("Question"))
     
     def __str__(self):
         return self.title
@@ -62,6 +67,9 @@ class Answer(Updated):
         verbose_name_plural =_("Answers")
         ordering = ['id']
 
-    question = models.ForeignKey(Question,on_delete=models.DO_NOTHING)
+    question = models.ForeignKey(Question,on_delete=models.DO_NOTHING,related_name='answer')
     is_right = models.BooleanField()
     body = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.body
